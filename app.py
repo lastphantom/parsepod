@@ -7,6 +7,14 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
+# 添加CORS支持
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
+
 def extract_title(soup):
     # 尝试从多个可能的位置提取标题
     title = None
@@ -102,4 +110,4 @@ def parse_podcast():
         return jsonify({'error': f"处理请求失败: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
