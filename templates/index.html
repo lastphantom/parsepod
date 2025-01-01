@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO 优化 Meta 标签 -->
+    <title>小宇宙播客下载器 - 在线解析小宇宙播客音频</title>
+    <meta name="description" content="小宇宙播客下载器是一个免费的在线工具，可以解析小宇宙播客链接，获取音频下载地址，支持在线播放和音频下载功能。">
+    <meta name="keywords" content="小宇宙,播客下载,播客解析,音频下载,小宇宙FM,播客工具">
+    <meta name="author" content="小宇宙播客下载器">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph 标签 -->
+    <meta property="og:title" content="小宇宙播客下载器 - 在线解析小宇宙播客音频">
+    <meta property="og:description" content="免费在线解析小宇宙播客链接，获取音频下载地址，支持在线播放和音频下载。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.parsepod.cc/">
+    
+    <!-- 移动端优化 -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- 百度站长验证 -->
+    <meta name="baidu-site-verification" content="你的百度验证码">
+    
+    <!-- 必应站长验证 -->
+    <meta name="msvalidate.01" content="你的必应验证码">
+    
+    <!-- Google 站长验证 -->
+    <meta name="google-site-verification" content="你的谷歌验证码">
+
+    <!-- 原有样式表引用 -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- 添加网站图标 -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <!-- 原有样式保持不变 -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+        }
+        .pulse-effect:focus {
+            animation: pulse-border 2s infinite;
+        }
+    </style>
+
+    <link rel="canonical" href="https://www.parsepod.cc/" />
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- 添加语义化标签 header -->
+    <header class="container mx-auto px-4 py-12 max-w-3xl">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-4">小宇宙播客下载器</h1>
+            <p class="text-gray-200">输入播客链接，获取音频下载地址</p>
+        </div>
+    </header>
+
+    <!-- 添加语义化标签 main -->
+    <main class="container mx-auto px-4 max-w-3xl">
+        <div class="glass-effect rounded-2xl shadow-xl p-8">
+            <div class="space-y-6">
+                <!-- 输入区域 -->
+                <div class="relative">
+                    <input type="text" id="podcastUrl" 
+                           class="w-full px-4 py-3 rounded-xl border-2 border-indigo-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all duration-200 pulse-effect"
+                           placeholder="请输入小宇宙播客链接">
+                    <button onclick="parsePodcast()" 
+                            class="mt-4 w-full bg-indigo-600 text-white rounded-xl px-6 py-3 hover:bg-indigo-700 transform hover:scale-[1.02] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        解析地址
+                    </button>
+                </div>
+
+                <!-- 加载动画 -->
+                <div id="loading" class="hidden">
+                    <div class="flex items-center justify-center space-x-3">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                        <p class="text-gray-600">正在解析中...</p>
+                    </div>
+                </div>
+
+                <!-- 错误提示 -->
+                <div id="error" class="hidden text-red-500 text-center py-2 px-4 bg-red-50 rounded-lg"></div>
+
+                <!-- 结果显示 -->
+                <div id="result" class="hidden">
+                    <div class="bg-gray-50 rounded-xl p-6 space-y-4">
+                        <!-- 标题显示 -->
+                        <div id="titleDisplay" class="text-lg font-semibold text-gray-800 border-b pb-3"></div>
+                        <div class="flex items-center justify-between space-x-4">
+                            <input type="text" readonly id="audioUrlDisplay"
+                                   class="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-600 text-sm focus:outline-none"
+                                   onclick="this.select()">
+                            <div class="flex space-x-2">
+                                <button onclick="copyAudioUrl()" 
+                                        class="px-4 py-2 bg-pink-400 text-white rounded-lg hover:bg-pink-600 transition-colors duration-200 flex items-center space-x-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                    </svg>
+                                    <span>复制</span>
+                                </button>
+                                <button onclick="toggleAudioPlayer()" 
+                                        class="px-4 py-2 bg-purple-400 text-white rounded-lg hover:bg-purple-600 transition-colors duration-200 flex items-center space-x-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span>播放</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- 音频播放器 -->
+                        <div id="audioPlayerContainer" class="hidden mt-4">
+                            <audio id="audioPlayer" controls class="w-full">
+                                您的浏览器不支持音频播放器。
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 添加页脚信息 -->
+    <footer class="container mx-auto px-4 py-8 text-center text-white">
+        <p>© 2024 小宇宙播客下载器 - 免费在线播客解析工具</p>
+        <nav class="mt-4">
+            <a href="/about" class="text-gray-200 hover:text-white mx-2">关于我们</a>
+            <a href="/privacy" class="text-gray-200 hover:text-white mx-2">隐私政策</a>
+            <a href="/terms" class="text-gray-200 hover:text-white mx-2">使用条款</a>
+        </nav>
+    </footer>
+
+    <!-- 添加结构化数据 -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "小宇宙播客下载器",
+        "description": "在线解析小宇宙播客音频，支持下载和在线播放",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "CNY"
+        }
+    }
+    </script>
+
+    <script>
+        async function parsePodcast() {
+            const url = document.getElementById('podcastUrl').value.trim();
+            if (!url) {
+                showError('请输入播客链接');
+                return;
+            }
+
+            showLoading(true);
+            showError('');
+            showResult(false);
+
+            try {
+                const response = await fetch('/parse', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('audioUrlDisplay').value = data.audio_url;
+                    document.getElementById('titleDisplay').textContent = data.title || '未知标题';
+                    showResult(true);
+                } else {
+                    showError(data.error || '解析失败，请稍后重试');
+                }
+            } catch (error) {
+                showError('网络错误，请稍后重试');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function copyAudioUrl() {
+            const input = document.getElementById('audioUrlDisplay');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                showToast('链接已复制到剪贴板！');
+            }).catch(() => {
+                showToast('复制失败，请手动复制链接。', true);
+            });
+        }
+
+        function toggleAudioPlayer() {
+            const audioContainer = document.getElementById('audioPlayerContainer');
+            const audioPlayer = document.getElementById('audioPlayer');
+            const url = document.getElementById('audioUrlDisplay').value;
+            
+            if (audioContainer.classList.contains('hidden')) {
+                audioPlayer.src = url;
+                audioContainer.classList.remove('hidden');
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+                audioContainer.classList.add('hidden');
+                audioPlayer.src = '';
+            }
+        }
+
+        function openAudioUrl() {
+            toggleAudioPlayer();
+        }
+
+        function showToast(message, isError = false) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-xl text-white ${isError ? 'bg-red-500' : 'bg-green-500'} transform transition-all duration-300 shadow-lg`;
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // 显示动画
+            setTimeout(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // 隐藏动画
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 2000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = message ? 'block' : 'none';
+        }
+
+        function showResult(show) {
+            document.getElementById('result').style.display = show ? 'block' : 'none';
+        }
+    </script>
+</body>
+</html>
